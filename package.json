@@ -1,0 +1,26 @@
+{
+  "name": "sarkari_result",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^7.0.0-rc14",
+    "axios": "^1.19.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "link-preview-js": "^3.2.0",
+    "node-cron": "^4.6.0",
+    "pino": "^10.0.1",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Control center and live notification management dashboard for Sarkari Jobs Notifier WhatsApp integration.">
+    <title>Govt Jobs Notifier - Command Dashboard</title>
+    
+    <!-- Modern Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(31, 41, 55, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.3);
+            
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent-emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.3);
+            --accent-cyan: #06b6d4;
+            --accent-purple: #a855f7;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* HEADER SECTION */
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px 36px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-emerald), var(--accent-purple));
+        }
+
+        .header-title-group h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title-group p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-dedup {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .status-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pulse-dot.online {
+            background: var(--accent-emerald);
+            box-shadow: 0 0 12px var(--accent-emerald);
+        }
+
+        .pulse-dot.online::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            animation: pulse-ring 1.8s infinite;
+        }
+
+        .pulse-dot.offline {
+            background: var(--accent-rose);
+            box-shadow: 0 0 12px var(--accent-rose);
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* METRICS STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-highlight);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: var(--bg-card-hover);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .stat-icon.indigo { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+        .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+        .stat-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-subtext {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* MAIN DASHBOARD LAYOUT */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* ACTION BUTTONS GRID */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .btn-action i {
+            font-size: 1.4rem;
+            transition: var(--transition);
+        }
+
+        .btn-action.jobs i { color: #818cf8; }
+        .btn-action.cards i { color: #34d399; }
+        .btn-action.results i { color: #f472b6; }
+        .btn-action.admissions i { color: #fbbf24; }
+        .btn-action.refresh i { color: #22d3ee; }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-highlight);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action:hover i {
+            transform: scale(1.15);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* SCHEDULE CRON GRID */
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .schedule-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+        }
+
+        .schedule-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .schedule-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .schedule-badge {
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* DEDUPLICATION HISTORY TABLE & TAB */
+        .history-section {
+            margin-bottom: 28px;
+        }
+
+        .history-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .history-table-wrapper {
+            max-height: 320px;
+            overflow-y: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        .history-table th {
+            background: rgba(17, 24, 39, 0.9);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 12px 18px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .history-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        .history-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .cat-tag {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .cat-tag.job { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .cat-tag.admit-card { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .cat-tag.result { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+        .cat-tag.admission { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        /* ENDPOINTS GRID */
+        .endpoints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .endpoint-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .endpoint-card code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-emerald);
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: var(--transition);
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        /* CONSOLE LOG TERMINAL */
+        .log-terminal {
+            background: rgba(5, 8, 15, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.83rem;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        .log-line {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .log-line.info { background: rgba(99, 102, 241, 0.08); border-left: 3px solid var(--primary); }
+        .log-line.success { background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent-emerald); }
+        .log-line.error { background: rgba(244, 63, 94, 0.08); border-left: 3px solid var(--accent-rose); }
+
+        .log-time {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-size: 0.88rem;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.success { border-left: 4px solid var(--accent-emerald); }
+        .toast.error { border-left: 4px solid var(--accent-rose); }
+
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-title-group">
+                <h1><i class="fa-solid fa-paper-plane" style="color: var(--primary);"></i> Sarkari Jobs Notifier</h1>
+                <p>WhatsApp Group Notification Control Center <span class="badge-dedup"><i class="fa-solid fa-shield-halved"></i> Deduplication Engine Active</span></p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="status-pill" id="status-pill">
+                    <span class="pulse-dot offline" id="status-dot"></span>
+                    <span id="status-text">Connecting...</span>
+                </div>
+                <button class="btn-action refresh" onclick="refreshStatus()" title="Refresh Dashboard" style="padding: 10px 16px; flex-direction: row; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+            </div>
+        </header>
+
+        <!-- METRICS STATS GRID -->
+        <section class="stats-grid" aria-label="System Metrics">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">WhatsApp Status</span>
+                    <div class="stat-icon emerald"><i class="fa-brands fa-whatsapp"></i></div>
+                </div>
+                <div class="stat-value" id="stat-connection">Offline</div>
+                <div class="stat-subtext" id="stat-group-jid">Group: Connecting...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">Dedup History</span>
+                    <div class="stat-icon cyan"><i class="fa-solid fa-database"></i></div>
+                </div>
+                <div class="stat-value" id="stat-dedup-count">0</div>
+                <div class="stat-subtext">Tracked unique notifications</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">Today's Sent</span>
+                    <div class="stat-icon purple"><i class="fa-solid fa-calendar-day"></i></div>
+                </div>
+                <div class="stat-value" id="stat-today-sent">0</div>
+                <div class="stat-subtext" id="stat-today-date">Date: --</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">Total Notifications</span>
+                    <div class="stat-icon indigo"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+                <div class="stat-value" id="stat-total-sent">0</div>
+                <div class="stat-subtext">All-time messages delivered</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-label">Last Sync</span>
+                    <div class="stat-icon amber"><i class="fa-regular fa-clock"></i></div>
+                </div>
+                <div class="stat-value" id="stat-last-sync" style="font-size: 1.25rem;">Never</div>
+                <div class="stat-subtext">Automated 2h cron check</div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD GRID -->
+        <main class="dashboard-grid">
+            <!-- MANUAL TRIGGERS CARD -->
+            <section class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-bolt"></i> Manual Triggers</span>
+                    <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 500;">Exact-once check</span>
+                </div>
+                <div class="action-grid">
+                    <button class="btn-action jobs" id="btn-jobs" onclick="triggerJob('send-jobs')">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Fetch & Send Jobs</span>
+                    </button>
+
+                    <button class="btn-action cards" id="btn-admit-cards" onclick="triggerJob('send-admit-cards')">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>Admit Cards</span>
+                    </button>
+
+                    <button class="btn-action results" id="btn-results" onclick="triggerJob('send-results')">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                        <span>Exam Results</span>
+                    </button>
+
+                    <button class="btn-action admissions" id="btn-admissions" onclick="triggerJob('send-admissions')">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>Admissions</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SCHEDULED TASKS CARD -->
+            <section class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-clock"></i> Scheduled Cron Engine</span>
+                </div>
+                <div class="schedule-list">
+                    <div class="schedule-card" style="border-left-color: #818cf8;">
+                        <div class="schedule-info">
+                            <h4>Auto Job Check & Dispatch</h4>
+                            <p>Scrapes Sarkari Result, filters history & sends new jobs</p>
+                        </div>
+                        <div class="schedule-badge">Every 2 Hours</div>
+                    </div>
+
+                    <div class="schedule-card" style="border-left-color: #34d399;">
+                        <div class="schedule-info">
+                            <h4>Morning Admit Cards Digest</h4>
+                            <p>Daily top admit card updates</p>
+                        </div>
+                        <div class="schedule-badge">06:30 AM</div>
+                    </div>
+
+                    <div class="schedule-card" style="border-left-color: #f472b6;">
+                        <div class="schedule-info">
+                            <h4>Mid-Day Job Dispatch</h4>
+                            <p>Scheduled afternoon jobs check</p>
+                        </div>
+                        <div class="schedule-badge">12:10 PM</div>
+                    </div>
+
+                    <div class="schedule-card" style="border-left-color: #fbbf24;">
+                        <div class="schedule-info">
+                            <h4>Evening Results Digest</h4>
+                            <p>Exam results update alert</p>
+                        </div>
+                        <div class="schedule-badge">04:30 PM</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- DEDUPLICATION HISTORY SECTION -->
+        <section class="card history-section">
+            <div class="card-title">
+                <span><i class="fa-solid fa-shield-cat"></i> Deduplicated Notification History</span>
+                <div class="history-controls">
+                    <button class="filter-chip active" onclick="filterHistoryTable('all', this)">All</button>
+                    <button class="filter-chip" onclick="filterHistoryTable('job', this)">Jobs</button>
+                    <button class="filter-chip" onclick="filterHistoryTable('admit-card', this)">Admit Cards</button>
+                    <button class="filter-chip" onclick="filterHistoryTable('result', this)">Results</button>
+                    <button class="filter-chip" onclick="filterHistoryTable('admission', this)">Admissions</button>
+                </div>
+            </div>
+
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Title / Post Name</th>
+                            <th>Sent Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">Loading sent history...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- API ENDPOINTS CARD -->
+        <section class="card" style="margin-bottom: 28px;">
+            <div class="card-title">
+                <span><i class="fa-solid fa-code"></i> Live REST API Endpoints</span>
+            </div>
+            <div class="endpoints-grid">
+                <div class="endpoint-card">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim);">SYSTEM STATUS</div>
+                        <code>GET /api/status</code>
+                    </div>
+                    <button class="btn-copy" onclick="copyEndpoint('/api/status')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim);">SENT HISTORY</div>
+                        <code>GET /api/history</code>
+                    </div>
+                    <button class="btn-copy" onclick="copyEndpoint('/api/history')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim);">MANUAL JOBS TRIGGER</div>
+                        <code>GET /api/send-jobs</code>
+                    </div>
+                    <button class="btn-copy" onclick="copyEndpoint('/api/send-jobs')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim);">MANUAL CARDS TRIGGER</div>
+                        <code>GET /api/send-admit-cards</code>
+                    </div>
+                    <button class="btn-copy" onclick="copyEndpoint('/api/send-admit-cards')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY LOG CONSOLE -->
+        <section class="card">
+            <div class="card-title">
+                <span><i class="fa-solid fa-terminal"></i> Activity & System Logs</span>
+                <button class="btn-copy" onclick="clearLogs()"><i class="fa-solid fa-trash-can"></i> Clear Logs</button>
+            </div>
+            <div class="log-terminal" id="log-terminal">
+                <div class="log-line info">
+                    <span class="log-time">[System]</span> Dashboard initialized. Connected to WhatsApp bot server.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Sarkari Jobs Notifier Dashboard | Built with ❤️ for Government Job Aspirants</p>
+        </footer>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        const API_BASE = "";
+        let currentHistoryItems = {};
+        let activeCategoryFilter = "all";
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function addLog(message, type = "info") {
+            const terminal = document.getElementById('log-terminal');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            const time = new Date().toLocaleTimeString();
+            line.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
+            terminal.insertBefore(line, terminal.firstChild);
+            
+            while (terminal.children.length > 60) {
+                terminal.removeChild(terminal.lastChild);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('log-terminal').innerHTML = `
+                <div class="log-line info">
+                    <span class="log-time">[System]</span> Logs cleared.
+                </div>
+            `;
+            showToast("Activity logs cleared", "success");
+        }
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/api/status`);
+                if (!res.ok) throw new Error('Bot server unreachable');
+                const data = await res.json();
+                
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                const connStat = document.getElementById('stat-connection');
+                const groupStat = document.getElementById('stat-group-jid');
+                const totalSent = document.getElementById('stat-total-sent');
+                const todaySent = document.getElementById('stat-today-sent');
+                const dedupCount = document.getElementById('stat-dedup-count');
+                const todayDate = document.getElementById('stat-today-date');
+                const lastSync = document.getElementById('stat-last-sync');
+
+                if (data.connected) {
+                    dot.className = 'pulse-dot online';
+                    text.textContent = 'Connected & Active';
+                    connStat.textContent = 'Online';
+                    connStat.style.color = 'var(--accent-emerald)';
+                    groupStat.textContent = `Group: ${data.group ? (data.group.substring(0, 18) + '...') : 'Connected'}`;
+                } else {
+                    dot.className = 'pulse-dot offline';
+                    text.textContent = 'Disconnected';
+                    connStat.textContent = 'Offline';
+                    connStat.style.color = 'var(--accent-rose)';
+                    groupStat.textContent = 'Group: Disconnected';
+                }
+
+                if (typeof data.totalNotificationsSent !== 'undefined') {
+                    totalSent.textContent = data.totalNotificationsSent;
+                }
+                if (typeof data.todayNotificationsSent !== 'undefined') {
+                    todaySent.textContent = data.todayNotificationsSent;
+                }
+                if (typeof data.dedupHistoryCount !== 'undefined') {
+                    dedupCount.textContent = data.dedupHistoryCount;
+                }
+                if (data.date) {
+                    todayDate.textContent = `Date: ${data.date}`;
+                }
+                if (data.timestamp) {
+                    lastSync.textContent = new Date(data.timestamp).toLocaleTimeString();
+                }
+
+            } catch (err) {
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                const connStat = document.getElementById('stat-connection');
+                dot.className = 'pulse-dot offline';
+                text.textContent = 'Server Error';
+                connStat.textContent = 'Error';
+                connStat.style.color = 'var(--accent-rose)';
+                addLog('Status sync failed: ' + err.message, 'error');
+            }
+        }
+
+        async function fetchHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/api/history`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.success && data.items) {
+                    currentHistoryItems = data.items;
+                    renderHistoryTable();
+                }
+            } catch (err) {
+                console.error("Error fetching history:", err.message);
+            }
+        }
+
+        function filterHistoryTable(category, chipEl) {
+            activeCategoryFilter = category;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (chipEl) chipEl.classList.add('active');
+            renderHistoryTable();
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body');
+            const entries = Object.entries(currentHistoryItems);
+
+            if (entries.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">No sent history recorded yet. Duplicate prevention is ready.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const filtered = entries.filter(([url, rec]) => {
+                if (activeCategoryFilter === 'all') return true;
+                return rec.category === activeCategoryFilter;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">No items found for category "${activeCategoryFilter}".</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort by most recent
+            filtered.sort((a, b) => new Date(b[1].sentAt) - new Date(a[1].sentAt));
+
+            let html = '';
+            filtered.forEach(([url, rec]) => {
+                const catClass = rec.category || 'job';
+                const timeStr = rec.sentAt ? new Date(rec.sentAt).toLocaleString() : 'N/A';
+                const titleText = rec.title || url;
+
+                html += `
+                    <tr>
+                        <td><span class="cat-tag ${catClass}">${catClass}</span></td>
+                        <td style="font-weight: 600;"><a href="${url}" target="_blank" style="color: var(--text-main); text-decoration: none;">${titleText} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem; color: var(--text-dim);"></i></a></td>
+                        <td style="color: var(--text-muted); font-size: 0.82rem;">${timeStr}</td>
+                        <td><span style="color: var(--accent-emerald); font-size: 0.8rem; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Sent & Tracked</span></td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        async function triggerJob(endpoint) {
+            const btn = document.getElementById(`btn-${endpoint.replace('send-', '')}`);
+            let originalContent = '';
+            if (btn) {
+                originalContent = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Processing...</span>`;
+            }
+
+            try {
+                addLog(`Triggering endpoint /api/${endpoint}...`, 'info');
+                const res = await fetch(`${API_BASE}/api/${endpoint}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const sentCount = data.jobsSent ?? data.sent ?? 0;
+                    if (sentCount > 0) {
+                        addLog(`✅ Trigger /api/${endpoint} succeeded! Sent ${sentCount} new notification(s).`, 'success');
+                        showToast(`Successfully dispatched ${sentCount} new notification(s)!`, 'success');
+                    } else {
+                        addLog(`ℹ️ Trigger /api/${endpoint} finished. 0 new items to send (all deduplicated).`, 'info');
+                        showToast("All available postings were already sent previously (0 duplicates).", "success");
+                    }
+                } else {
+                    addLog(`❌ Error from /api/${endpoint}: ${data.error || 'Unknown error'}`, 'error');
+                    showToast(`Error: ${data.error || 'Operation failed'}`, 'error');
+                }
+            } catch (err) {
+                addLog(`❌ Network error triggering /api/${endpoint}: ${err.message}`, 'error');
+                showToast(`Network error: ${err.message}`, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                }
+                setTimeout(() => {
+                    fetchStatus();
+                    fetchHistory();
+                }, 1000);
+            }
+        }
+
+        function refreshStatus() {
+            addLog('Manually refreshing dashboard metrics...', 'info');
+            fetchStatus();
+            fetchHistory();
+            showToast("Metrics refreshed", "success");
+        }
+
+        function copyEndpoint(path) {
+            const fullUrl = window.location.origin + path;
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                showToast(`Copied ${path} to clipboard!`, "success");
+            }).catch(() => {
+                showToast(`Endpoint: ${fullUrl}`, "info");
+            });
+        }
+
+        // Initialize dashboard
+        fetchStatus();
+        fetchHistory();
+        setInterval(fetchStatus, 15000); // refresh status every 15 seconds
+        setInterval(fetchHistory, 30000); // refresh history table every 30 seconds
+    </script>
+</body>
+</html>
